@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/img"/>
+    <qresource prefix="/styles"/>
+    <qresource prefix="/">
+        <file>styles/style.qss</file>
+        <file>img/cross.png</file>
+    </qresource>
+</RCC>
