@@ -1,9 +1,11 @@
 # Prerequisites
 *.d
 *.autosave
+*.user
+*.10-pre1
 
 #Folders
-./build-Scaner-Desktop_Qt_5_12_3_MinGW_64_bit-Debug
+Scanner/Scanner-x64-Debug/
 
 # Compiled Object files
 *.slo
