@@ -1,7 +1,8 @@
 #ifndef STARTWINDOW_H
 #define STARTWINDOW_H
 
-#include "receivingmode.h"
+#include "modes/receivingmode.h"
+#include "modes/shipmentmode.h"
 
 #include <QWidget>
 #include <QVBoxLayout>

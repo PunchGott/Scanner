@@ -1,0 +1,10 @@
+debug/main.o
+debug/basemode.o
+debug/receivingmode.o
+debug/shipmentmode.o
+debug/startwindow.o
+debug/tablemodel.o
+debug/qrc_res.o
+debug/moc_basemode.o
+debug/moc_receivingmode.o
+debug/moc_startwindow.o

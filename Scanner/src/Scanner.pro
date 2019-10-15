@@ -26,19 +26,24 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
+SUBDIRS = modes \
+          tablemodel
+
 SOURCES += \
-        abstractmode.cpp \
         main.cpp \
-        receivingmode.cpp \
+        modes/basemode.cpp \
+        modes/receivingmode.cpp \
+        modes/shipmentmode.cpp \
         startwindow.cpp \
-        tablemodel.cpp
+        tablemodel/tablemodel.cpp
 
 HEADERS += \
-        abstractmode.h \
+        modes/basemode.h \
+        modes/receivingmode.h \
+        modes/shipmentmode.h \
         namespace.h \
-        receivingmode.h \
         startwindow.h \
-        tablemodel.h
+        tablemodel/tablemodel.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

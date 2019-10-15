@@ -6,7 +6,7 @@
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../src/receivingmode.h"
+#include "../../src/modes/receivingmode.h"
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmetatype.h>
 #if !defined(Q_MOC_OUTPUT_REVISION)
@@ -63,7 +63,7 @@ void ReceivingMode::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
 }
 
 QT_INIT_METAOBJECT const QMetaObject ReceivingMode::staticMetaObject = { {
-    &AbstractMode::staticMetaObject,
+    &BaseMode::staticMetaObject,
     qt_meta_stringdata_ReceivingMode.data,
     qt_meta_data_ReceivingMode,
     qt_static_metacall,
@@ -82,12 +82,12 @@ void *ReceivingMode::qt_metacast(const char *_clname)
     if (!_clname) return nullptr;
     if (!strcmp(_clname, qt_meta_stringdata_ReceivingMode.stringdata0))
         return static_cast<void*>(this);
-    return AbstractMode::qt_metacast(_clname);
+    return BaseMode::qt_metacast(_clname);
 }
 
 int ReceivingMode::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    _id = AbstractMode::qt_metacall(_c, _id, _a);
+    _id = BaseMode::qt_metacall(_c, _id, _a);
     return _id;
 }
 QT_WARNING_POP

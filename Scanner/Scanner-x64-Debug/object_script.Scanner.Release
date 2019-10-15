@@ -1,0 +1,10 @@
+release/main.o
+release/basemode.o
+release/receivingmode.o
+release/shipmentmode.o
+release/startwindow.o
+release/tablemodel.o
+release/qrc_res.o
+release/moc_basemode.o
+release/moc_receivingmode.o
+release/moc_startwindow.o
