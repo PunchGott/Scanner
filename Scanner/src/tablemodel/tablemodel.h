@@ -28,7 +28,7 @@ public:
     bool computeRest(const QStringList &);
     bool repeatLine(const QStringList &);
 
-    bool addLine(const QStringList &, int role);
+    bool addLine(const QStringList &);
     void computeTotal();
 
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;

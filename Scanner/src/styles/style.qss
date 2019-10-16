@@ -1,18 +1,69 @@
 
 /*Стили в документации: гугли "Qt Style Sheets"*/
 
-/*QPushButton#crossImgPB
+QLabel
 {
-    background-color: red;
+	font-size: 20px;
 }
 
-QPushButton#choiceFilePB
+QHeaderView
 {
+	background-color: #FC0000;
+}
+
+QPushButton#start_PB
+{
+	height: 60px;
+	border: 1px groove;
+	border-radius: 5px;
+	color: white;
+	font-size: 30px;
+	background-color: #0000FF;
+}
+
+QPushButton#start_PB:hover
+{
+	/*cursor: pointer;*/
+	color: white;
+	background-color: #3C30DD;
+}
+
+
+QPushButton#choiceFilePB
+
+{   
+	height:30px;
+	margin: 10px 10px 20px 20px;
+	font-size: 20px;
     border: 1px solid;
     border-radius: 6px;
-    min-width: 90px;
-    size: 20px;
-/*    height: 20px;*/
     color: white;
-    background-color: blue;
-}*/
+    background-color: #0000FF;
+}
+
+QPushButton#choiceFilePB:hover
+
+{  
+	background-color: #3C30DD;
+}
+
+
+QPushButton#crossImgPB
+{
+	height:30px;
+	margin: 10px 10px 20px 20px;
+	border: 1px solid;
+    border-radius: 6px;
+    background-color: #FF0000;
+}
+
+QPushButton#crossImgPB:hover
+{
+    background-color: #EC3333;
+}
+
+QLineEdit
+{
+	height: 25px;
+	margin: 10px 10px 10px 10px;
+}

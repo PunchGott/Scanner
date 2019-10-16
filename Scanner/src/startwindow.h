@@ -5,6 +5,8 @@
 #include "modes/shipmentmode.h"
 
 #include <QWidget>
+#include <QPushButton>
+#include <QPointer>
 #include <QVBoxLayout>
 #include <QPushButton>
 

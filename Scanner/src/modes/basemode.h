@@ -4,23 +4,17 @@
 #include "../tablemodel/tablemodel.h"
 
 #include <QWidget>
-#include <QMenuBar>
-#include <QMenu>
-#include <QAction>
 #include <QLabel>
 #include <QRegExpValidator>
 #include <QLineEdit>
-#include <QComboBox>
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QKeyEvent>
 
 #include <QFileDialog>
 #include <QFile>
 #include <QTextStream>
 #include <QTableView>
-#include <QItemDelegate>
 
 class BaseMode : public QWidget
 {
@@ -28,7 +22,7 @@ class BaseMode : public QWidget
 
 public:
     explicit BaseMode(QWidget *parent = nullptr);
-    ~BaseMode();
+    virtual ~BaseMode();
 
 protected slots:
     void selectFile();
@@ -36,13 +30,17 @@ protected slots:
     void clearTable();
 
 
-//    virtual bool makeVBA();
-protected:
-    virtual bool readFile(const QString &EAN);
-    virtual bool convertPrise(QStringList &);
+    virtual bool makeVBA() = 0;
 
-    virtual bool changeFile(QStringList& lineList, int role);
-    virtual bool changeModel(QStringList& lineList, int role);
+protected:
+    bool readFile(const QString &EAN);
+    bool convertPrise(QStringList &);
+
+    virtual bool changeFile(QStringList& lineList);
+    virtual bool changeModel(QStringList& lineList);
+
+    virtual bool computeRest() = 0;
+    virtual bool writeInFile(const QString &line) = 0;
 
     TableModel *model;
     QTableView *table;
@@ -50,7 +48,6 @@ protected:
     QString m_fileName;
 
     QWidget *m_mainWidget;
-    QComboBox *m_choiceModeComboBox;
     QLabel *m_choiceFileLbl, *m_searchLbl;
     QPushButton *m_choiceFilePB, *m_crossImgPB;
     QLineEdit *m_inputEANLE;

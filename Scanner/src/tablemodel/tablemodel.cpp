@@ -109,7 +109,7 @@ bool TableModel::repeatLine(const QStringList &lineList)
     QVariant EAN = QVariant(lineList.at(Scanner::EAN));
 
 #ifdef DEBUG
-    qDebug() << __LINE__ << " "  << __FILE__ << ":\n " << lineList.at(Scanner::EAN);
+    qDebug() << __LINE__ << " "  << __FILE__ << ": " << lineList.at(Scanner::EAN);
 #endif
 
     for (int i = 0; i < m_cells.size(); ++i) {
@@ -124,7 +124,7 @@ bool TableModel::repeatLine(const QStringList &lineList)
 }
 
 //this function add a line in begin of m_cells's table if no such line in current table
-bool TableModel::addLine(const QStringList &lineList, int role)
+bool TableModel::addLine(const QStringList &lineList)
 {
     if (!repeatLine(lineList) && insertRows(0,1)) {
     for (int i = 0; i < lineList.size(); ++i) {
@@ -175,6 +175,7 @@ bool TableModel::setData(const QModelIndex &index, const QVariant &value, int ro
 {
     if (index.isValid() && role == Qt::EditRole) {
         m_cells[index.row()][index.column()] = value;
+        dataChanged(QModelIndex(),QModelIndex());
         return true;
     }
         return false;

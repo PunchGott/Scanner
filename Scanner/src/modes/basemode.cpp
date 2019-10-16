@@ -15,7 +15,7 @@
 // Добавить настройки
 // Добавить хоть какие-то стили
 
-BaseMode::BaseMode(QWidget *parent)
+BaseMode::BaseMode(QWidget */*parent*/)
 {
     m_mainWidget = new QWidget();
     m_mainWidget->setFixedSize(1280,768);
@@ -50,21 +50,23 @@ BaseMode::BaseMode(QWidget *parent)
     m_mainLayout->addWidget(table);
     m_mainLayout->addLayout(m_infoLayout);
 
-    qDebug() << connect(m_choiceFilePB, SIGNAL(clicked()), SLOT(selectFile()));
-    connect(m_choiceFilePB, SIGNAL(pressed()), this, SLOT(selectFile()));
+    connect(m_choiceFilePB, SIGNAL(clicked()), SLOT(selectFile()));
+    connect(m_choiceFilePB, SIGNAL(pressed()), SLOT(selectFile()));
 
-    connect(m_crossImgPB, SIGNAL(clicked()), this, SLOT(clearTable()));
-    connect(m_crossImgPB, SIGNAL(pressed()), this, SLOT(clearTable()));
+    connect(m_crossImgPB, SIGNAL(clicked()), SLOT(clearTable()));
+    connect(m_crossImgPB, SIGNAL(pressed()), SLOT(clearTable()));
 
-    connect(m_inputEANLE, SIGNAL(textEdited(const QString &)), this, SLOT(inputEAN(const QString &)));
+    connect(m_inputEANLE, SIGNAL(textEdited(const QString &)),
+            SLOT(inputEAN(const QString &)));
 
     m_mainWidget->show();
 }
 
 BaseMode::~BaseMode()
 {
-    if(CSVFile.isOpen())
-    CSVFile.close();
+    qDebug() << CSVFile.isOpen() << endl;
+//    if(CSVFile.isOpen())
+//    CSVFile.close();
 }
 
 // Slots:
@@ -73,12 +75,13 @@ void BaseMode::selectFile()
     m_fileName = QFileDialog::getOpenFileName(m_mainWidget,
         tr("Open Image"), QDir::currentPath(), tr("CSV file (*.csv)")); // Изменить позже currentPath() на rootPath()
 
-    CSVFile.setFileName(m_fileName);
-
     if (!m_fileName.isEmpty()) {
-        QString name;
-        for (int i = m_fileName.size(); m_fileName[i] != '/'; --i) // to only name of file view, not all directory
-            name[i] = m_fileName[i];
+        int count = 0; // counter for size QString name
+        for (int i = m_fileName.size(); m_fileName[i] != '/'; --i)
+            ++count;
+        QString name(count);
+        for (int i = m_fileName.size(); m_fileName[i] != '/'; --i, --count) // to only name of file view, not all directory
+            name[count] = m_fileName[i];
         m_choiceFileLbl->setText(QString("Файл: %1").arg(name));
     }
 }
@@ -96,39 +99,54 @@ void BaseMode::clearTable()
     m_choiceFileLbl->setText("");
     CSVFile.close();
     model->removeRows(0,model->rowCount() - 2);
+    // Поставить значение в "Итого: " = 0
 }
 
 // Just functions:
 bool BaseMode::convertPrise(QStringList &lineList)
 {
+    if (lineList.at(Scanner::PRISE).contains(QRegExp("[0-9]{1,}\\.[0-9]{1,}"))) // !!!
+        return true;
+    else {
     for (int i = 0; i < lineList.at(Scanner::PRISE).size(); ++i) {
         if (lineList.at(Scanner::PRISE).at(i) == ',') {
             lineList[Scanner::PRISE][i] = '.';
             return true;
         }
     }
+        }
     return false;
 }
 
 bool BaseMode::readFile(const QString &EAN)
 {
-    if (CSVFile.open(QIODevice::ReadOnly)) {
-        QTextStream in(&CSVFile);
+    CSVFile.setFileName(m_fileName);
+    if (CSVFile.exists(m_fileName) && CSVFile.open(QIODevice::ReadOnly)) {
+        QTextStream readStream(&CSVFile);
         QString line;
         QStringList lineList;
-        while (!in.atEnd()) {
-            line = in.readLine();
+        while (!readStream.atEnd()) {
+            line = readStream.readLine();
             if (line.contains(EAN))
             {
                 lineList.append(line.split(";"));
 #ifdef DEBUG
                 qDebug() << __LINE__ << " "  << __FILE__ << ":\n " << line << endl;
 #endif
-                if (changeFile(lineList, Scanner::SHIPMENT) &&
-                        changeModel(lineList, Scanner::SHIPMENT))
-                    return true;
+                if (convertPrise(lineList)) {
+                model->addLine(lineList);
+                }
+                else
+                {
+                    qDebug() << "Не обнаружена цена! " << endl;
+                    return false;
+                }
+                model->computeTotal();
+                computeRest(); // the impelementation of this function is in inherits classes
+                writeInFile(line);
+                return true;
             }
-            else if (in.atEnd())
+            else if (readStream.atEnd())
                 qDebug() << __LINE__ << " "  << __FILE__ << ":\n " << "Ничего не найдено!" << endl;
         } // while
     } // if
@@ -138,16 +156,14 @@ bool BaseMode::readFile(const QString &EAN)
     return false;
 }
 
-bool BaseMode::changeFile(QStringList &lineList, int role)
+bool BaseMode::changeFile(QStringList &/*lineList*/)
 {
-
+    return false;
 }
 
-bool BaseMode::changeModel(QStringList &lineList, int role)
+bool BaseMode::changeModel(QStringList &/*lineList*/)
 {
-    if (convertPrise(lineList) && role == Scanner::SHIPMENT) {
-    model->addLine(lineList, Scanner::SHIPMENT);
-    model->computeTotal();
-    }
-    else qDebug() << "Неправильная цена!" << endl;
+    return false;
 }
+
+

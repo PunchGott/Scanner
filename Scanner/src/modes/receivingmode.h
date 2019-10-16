@@ -6,15 +6,16 @@
 class ReceivingMode : public BaseMode
 {
     Q_OBJECT
+
 public:
     explicit ReceivingMode(QObject *parent = nullptr);
-//    virtual bool makeVBA() override;
-
-signals:
+    virtual ~ReceivingMode() override;
 
 private:
+    virtual bool computeRest() override;
+    virtual bool writeInFile(const QString &line) override;
 
-public slots:
+    virtual bool makeVBA() override;
 };
 
 #endif // RECEIVINGMODE_H
