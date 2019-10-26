@@ -10,11 +10,12 @@ enum Headers // since 0 to 15
     CODE = 0,
     ARTICLE = 1,
     NAME = 2,
-    PRISE = 3,
-    AMOUNT = 4,
-    SUM = 5,
-    REST = 6, // Остаток
-    EAN = 7
+    PRISE,
+    REST, // Остаток
+    EAN,
+    AMOUNT,
+    SUM
+
 };
 
 enum Mode

@@ -28,6 +28,13 @@ QModelIndex TableModel::index(int row, int column, const QModelIndex &/*parent*/
         return QModelIndex();
 }
 
+QVector<QVariant> TableModel::Row(const int row) const
+{
+    if (row >= 0 && row < m_cells.size())
+        return m_cells.at(row);
+    else
+        return QVector<QVariant>();
+}
 Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
 {
     Qt::ItemFlags flags = QAbstractTableModel::flags(index);
@@ -123,7 +130,7 @@ bool TableModel::repeatLine(const QStringList &lineList)
     return false;
 }
 
-//this function add a line in begin of m_cells's table if no such line in current table
+//this function add a line in begin of m_cells's table if no such line is in current table
 bool TableModel::addLine(const QStringList &lineList)
 {
     if (!repeatLine(lineList) && insertRows(0,1)) {

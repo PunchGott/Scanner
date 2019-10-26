@@ -1,19 +1,17 @@
-﻿#include "basemode.h"
+﻿ #include "basemode.h"
 
 #define DEBUG
 
-// Добавить функцию подсчета оставшегося товара на складе REST
+// Просмотреть ВЕСЬ код на наличие ошибок и некрасоты!
 // Сделать возможность создания нуменклатуры в Excel
-// Добавить возможность чтения XML формата
+// После нажатия на кнопку "Сохранить" массив QByteArray записывается в новый файл, который затем переименовывается
 
 // Добавить обработку пользовательских ошибок и вывод их в QDialog
 // Добавить обработку логических и программных ошибок
-// Добавить верхнюю панель
-// Добавить бар-меню
+// Добавить QMenuBar
+// Добавть QStatusBar
 // Добавить подсказки
-// Перевести контекстное меню на русский
-// Добавить настройки
-// Добавить хоть какие-то стили
+
 
 BaseMode::BaseMode(QWidget */*parent*/)
 {
@@ -23,7 +21,7 @@ BaseMode::BaseMode(QWidget */*parent*/)
     m_choiceFileLbl = new QLabel("Выберите файл: ");
     m_searchLbl = new QLabel("Поиск: ");
 
-    m_choiceFilePB = new QPushButton("Выберите файл");
+    m_choiceFilePB = new QPushButton("Открыть");
     m_choiceFilePB->setObjectName("choiceFilePB");
     m_crossImgPB = new QPushButton();
     m_crossImgPB->setIcon(QIcon(":/img/cross.png"));
@@ -32,6 +30,16 @@ BaseMode::BaseMode(QWidget */*parent*/)
     model = new TableModel();
     table = new QTableView();
     table->setModel(model);
+
+
+    QMenuBar *menuBar = new QMenuBar(m_mainWidget);
+    QMenu *fileMenu = new QMenu("&Файл");
+    fileMenu->addAction("&Открыть", this, SLOT(selectFile()),Qt::CTRL + Qt::Key_O);
+    menuBar->addMenu(fileMenu);
+    fileMenu->addAction("&Сохранить", this, SLOT(saveChanges()), Qt::CTRL + Qt::Key_S);
+//    fileMenu->addAction("&Выход", this, SLOT(), Qt::CTRL + Qt::Key_Q);
+    m_crossImgPB->setToolTip("Clear table");
+
 
     m_inputEANLE = new QLineEdit;
     m_inputEANLE->setValidator(new QRegExpValidator(QRegExp("[0-9]{13}")));
@@ -64,9 +72,8 @@ BaseMode::BaseMode(QWidget */*parent*/)
 
 BaseMode::~BaseMode()
 {
-    qDebug() << CSVFile.isOpen() << endl;
-//    if(CSVFile.isOpen())
-//    CSVFile.close();
+    if(CSVFile.isOpen())
+    CSVFile.close();
 }
 
 // Slots:
@@ -74,6 +81,10 @@ void BaseMode::selectFile()
 {
     m_fileName = QFileDialog::getOpenFileName(m_mainWidget,
         tr("Open Image"), QDir::currentPath(), tr("CSV file (*.csv)")); // Изменить позже currentPath() на rootPath()
+
+    CSVFile.setFileName(m_fileName);
+    if (CSVFile.exists(m_fileName) && CSVFile.open(QIODevice::ReadOnly))
+        m_fileContent = CSVFile.readAll(); // write all content in QByteArray
 
     if (!m_fileName.isEmpty()) {
         int count = 0; // counter for size QString name
@@ -98,6 +109,7 @@ void BaseMode::clearTable()
 {
     m_choiceFileLbl->setText("");
     CSVFile.close();
+    model->setData(model->index(model->rowCount() - 1, Scanner::SUM), QVariant(0), Qt::EditRole);
     model->removeRows(0,model->rowCount() - 2);
     // Поставить значение в "Итого: " = 0
 }
@@ -120,9 +132,8 @@ bool BaseMode::convertPrise(QStringList &lineList)
 
 bool BaseMode::readFile(const QString &EAN)
 {
-    CSVFile.setFileName(m_fileName);
-    if (CSVFile.exists(m_fileName) && CSVFile.open(QIODevice::ReadOnly)) {
-        QTextStream readStream(&CSVFile);
+    if (CSVFile.isOpen()) {
+        QTextStream readStream(&m_fileContent);
         QString line;
         QStringList lineList;
         while (!readStream.atEnd()) {
@@ -131,7 +142,7 @@ bool BaseMode::readFile(const QString &EAN)
             {
                 lineList.append(line.split(";"));
 #ifdef DEBUG
-                qDebug() << __LINE__ << " "  << __FILE__ << ":\n " << line << endl;
+                qDebug() << __FILE__ << " "  << __LINE__ << ":\n " << line << endl;
 #endif
                 if (convertPrise(lineList)) {
                 model->addLine(lineList);
@@ -147,11 +158,11 @@ bool BaseMode::readFile(const QString &EAN)
                 return true;
             }
             else if (readStream.atEnd())
-                qDebug() << __LINE__ << " "  << __FILE__ << ":\n " << "Ничего не найдено!" << endl;
+                qDebug() << __FILE__ << " "  << __LINE__ << ":\n " << "Ничего не найдено!" << endl;
         } // while
     } // if
     else
-        qDebug() << __LINE__ << " "  << __FILE__ << ":\n " << "File" << m_fileName << "isn't open!" << endl;
+        qDebug() << __FILE__ << " "  << __LINE__ << ":\n " << "File" << m_fileName << "isn't open!" << endl;
 
     return false;
 }
@@ -166,4 +177,63 @@ bool BaseMode::changeModel(QStringList &/*lineList*/)
     return false;
 }
 
+void BaseMode::saveChanges()
+{
+    QVector<QVariant> vector = model->Row(0);
+
+    QString line;
+    QStringList lineList;
+
+    QString lineContent = QTextCodec::codecForName("Windows-1251")->toUnicode(m_fileContent);
+    QStringList lineListContent = lineContent.split(QRegExp(";|\\r\\n"));
+#ifdef DEBUG
+    qDebug() << lineListContent.at(0) << endl;
+#endif
+    for (int i = 0; i < vector.size(); ++i) {
+        lineList.push_back(vector.at(i).toString());
+    }
+    for (int i = 0; i < lineListContent.size(); ++i)
+#ifdef DEBUG
+        qDebug() << lineListContent.at(i) << " ";
+    qDebug() << endl << endl;
+#endif
+
+    lineListContent.indexOf(lineList.at(Scanner::EAN));
+    lineListContent[Scanner::REST] = lineList.at(Scanner::AMOUNT);
+
+    // Чтобы найти нужную строку, в которой необходимо заменить остаток lineListContent[Scanner::REST] на
+    // остаток lineList[Scanner::REST], требуется найти начало строки в lineListContent по её коду и прибавить 4
+    auto what = lineList.at(Scanner::CODE);
+    auto index = lineListContent.indexOf(what);
+    lineListContent[index + 4] = lineList.at(Scanner::REST); // + 4 because Scanner::REST = 4
+
+     for (int i = 0; i < lineListContent.size(); ++i)
+#ifdef DEBUG
+         qDebug() << lineListContent.at(i) << " ";
+#endif
+
+     QString lineOut = lineListContent.join(';');
+     int count = 0; // count of columns in file
+     for (int i = 0; i < lineOut.size(); ++i) {
+         if (lineOut.at(i) == ';')
+             ++count;
+         if (count == 6) { // 6 = кол-во столбцов
+             lineOut.replace(i, 1, '\n');  // 13 = size of EAN
+             count = 0;
+         }
+     }
+
+     m_fileContent = lineOut.toLocal8Bit();
+
+    QFile test("test123.csv");
+    if (test.open(QIODevice::WriteOnly)) {
+        test.write(m_fileContent);
+        test.close();
+        }
+    else
+#ifdef DEBUG
+        qDebug() << "File isn't open!";
+#endif
+
+}
 

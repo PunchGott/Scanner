@@ -8,7 +8,7 @@ QLabel
 
 QHeaderView
 {
-	background-color: #FC0000;
+/*        background-color: #FC0000;*/
 }
 
 QPushButton#start_PB
@@ -32,9 +32,9 @@ QPushButton#start_PB:hover
 QPushButton#choiceFilePB
 
 {   
-	height:30px;
-	margin: 10px 10px 20px 20px;
-	font-size: 20px;
+    height:30px;
+    margin: 10px 10px 20px 20px;
+    font-size: 20px;
     border: 1px solid;
     border-radius: 6px;
     color: white;

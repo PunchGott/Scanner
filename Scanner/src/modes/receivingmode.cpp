@@ -22,12 +22,14 @@ bool ReceivingMode::computeRest()
         return false;
 }
 
-bool ReceivingMode::writeInFile(const QString &line)
+bool ReceivingMode::writeInFile(const QString &/*line*/)
 {
     if (CSVFile.open(QIODevice::WriteOnly)) {
     QTextStream writeStream(&CSVFile);
     writeStream << "FUCK DICK BITCH";
+    return true;
     }
+    return false;
 }
 
 bool ReceivingMode::makeVBA()

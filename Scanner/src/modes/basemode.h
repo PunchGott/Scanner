@@ -4,6 +4,8 @@
 #include "../tablemodel/tablemodel.h"
 
 #include <QWidget>
+#include <QMenuBar>
+#include <QMenu>
 #include <QLabel>
 #include <QRegExpValidator>
 #include <QLineEdit>
@@ -14,6 +16,7 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QTextStream>
+#include <QTextCodec>
 #include <QTableView>
 
 class BaseMode : public QWidget
@@ -25,17 +28,9 @@ public:
     virtual ~BaseMode();
 
 protected slots:
-    void selectFile();
-    void inputEAN(const QString &EAN);
-    void clearTable();
-
-
     virtual bool makeVBA() = 0;
 
 protected:
-    bool readFile(const QString &EAN);
-    bool convertPrise(QStringList &);
-
     virtual bool changeFile(QStringList& lineList);
     virtual bool changeModel(QStringList& lineList);
 
@@ -45,7 +40,19 @@ protected:
     TableModel *model;
     QTableView *table;
     QFile CSVFile;
+    QByteArray m_fileContent;
     QString m_fileName;
+
+private slots:
+    void saveChanges();
+    void selectFile();
+    void inputEAN(const QString &EAN);
+    void clearTable();
+
+
+private:
+    bool readFile(const QString &EAN);
+    bool convertPrise(QStringList &);
 
     QWidget *m_mainWidget;
     QLabel *m_choiceFileLbl, *m_searchLbl;
