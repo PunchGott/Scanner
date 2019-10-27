@@ -1,12 +1,12 @@
 #ifndef NAMESPACE_H
 #define NAMESPACE_H
 
-#define HEADERS_SIZE 9
-
+#include <QtGlobal>
 namespace Scanner {
+const quint8 g_headers_size = 8;
 
-enum Headers // since 0 to 15
-{
+enum Headers : quint8
+{ // since 0 to 15
     CODE = 0,
     ARTICLE = 1,
     NAME = 2,
@@ -18,7 +18,9 @@ enum Headers // since 0 to 15
 
 };
 
-enum Mode
+
+
+enum Mode : quint8
 {
     RECEIVING = 16, // Получение товара
     SHIPMENT = 17// Отгрузка товара

@@ -44,7 +44,7 @@ QPushButton#choiceFilePB
 QPushButton#choiceFilePB:hover
 
 {  
-	background-color: #3C30DD;
+	background-color: #4C3FF1;
 }
 
 
@@ -59,7 +59,7 @@ QPushButton#crossImgPB
 
 QPushButton#crossImgPB:hover
 {
-    background-color: #EC3333;
+    background-color: #EC3939;
 }
 
 QLineEdit

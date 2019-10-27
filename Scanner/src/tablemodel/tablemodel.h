@@ -1,12 +1,12 @@
 #ifndef TABLEMODEL_H
 #define TABLEMODEL_H
 
-#include <namespace.h>
+#include "../namespace.h"
 
 #include <QAbstractTableModel>
+#include <QVector>
 
 #include <QDebug>
-#include <QVector>
 
 class TableModel : public QAbstractTableModel
 {

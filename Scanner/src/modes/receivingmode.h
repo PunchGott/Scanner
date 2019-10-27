@@ -13,7 +13,6 @@ public:
 
 private:
     virtual bool computeRest() override;
-    virtual bool writeInFile(const QString &line) override;
 
     virtual bool makeVBA() override;
 };

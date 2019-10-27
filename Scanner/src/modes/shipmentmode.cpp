@@ -22,11 +22,6 @@ bool ShipmentMode::computeRest()
         return false;
 }
 
-bool ShipmentMode::writeInFile(const QString &/*line*/)
-{
-    return false;
-}
-
 bool ShipmentMode::makeVBA()
 {
     return false;

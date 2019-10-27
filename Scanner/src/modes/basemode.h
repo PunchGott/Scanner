@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "../namespace.h"
 #include "../tablemodel/tablemodel.h"
 
 #include <QWidget>
@@ -35,7 +36,6 @@ protected:
     virtual bool changeModel(QStringList& lineList);
 
     virtual bool computeRest() = 0;
-    virtual bool writeInFile(const QString &line) = 0;
 
     TableModel *model;
     QTableView *table;
@@ -48,6 +48,7 @@ private slots:
     void selectFile();
     void inputEAN(const QString &EAN);
     void clearTable();
+    bool closeProgram();
 
 
 private:

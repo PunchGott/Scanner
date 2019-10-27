@@ -1,14 +1,13 @@
 #include "tablemodel.h"
 
 #define DEBUG
-// (Заполнить эту колонку в самом .csv файле)
 
 TableModel::TableModel(QObject *parent)
     : QAbstractTableModel {parent},
-      m_cells{1, QVector<QVariant>(HEADERS_SIZE)} // почему создается две строки?
+      m_cells{1, QVector<QVariant>(Scanner::g_headers_size)} // почему создается две строки?
 {
 //    qDebug() << m_cells.size();
-    m_cells.push_back(QVector<QVariant>(HEADERS_SIZE));
+    m_cells.push_back(QVector<QVariant>(Scanner::g_headers_size));
     m_cells[rowCount() - 1][0] = "Итого: ";
 
 }
@@ -77,7 +76,7 @@ bool TableModel::insertRows(int row, int count, const QModelIndex &/*parent*/)
     if ( (row >= 0 && row < m_cells.size()) && (count > 0 && count < m_cells.first().size()) ) {
     beginInsertRows(QModelIndex(), row, row + count - 1);
     for (int i = 0; i < count; ++i)
-        m_cells.insert(row, QVector<QVariant>(HEADERS_SIZE));
+        m_cells.insert(row, QVector<QVariant>(Scanner::g_headers_size));
     endInsertRows();
     return true;
     }
@@ -122,7 +121,7 @@ bool TableModel::repeatLine(const QStringList &lineList)
     for (int i = 0; i < m_cells.size(); ++i) {
         if (m_cells.at(i).at(Scanner::EAN) == EAN) {
             m_cells[i][Scanner::AMOUNT] = QVariant(m_cells.at(i).at(Scanner::AMOUNT).toInt() + 1);
-            emit dataChanged(index(i,0), index(i,HEADERS_SIZE - 1));
+            emit dataChanged(index(i,0), index(i,Scanner::g_headers_size - 1));
             computePrise(index(i,0), index(i,6));
             return true;
         }
@@ -149,9 +148,9 @@ bool TableModel::addLine(const QStringList &lineList)
 
 void TableModel::computePrise(const QModelIndex &left, const QModelIndex &right)
 {
-    m_cells[left.row()][Scanner::SUM] =
-            QVariant (m_cells.at(left.row()).at(Scanner::PRISE).toDouble() *
-            m_cells.at(right.row()).at(Scanner::AMOUNT).toInt());
+    auto prise = m_cells.at(left.row()).at(Scanner::PRISE).toDouble();
+    auto amount = m_cells.at(right.row()).at(Scanner::AMOUNT).toInt();
+    m_cells[left.row()][Scanner::SUM] = QVariant (prise * amount);
 }
 
 void TableModel::computeTotal()
@@ -163,17 +162,16 @@ void TableModel::computeTotal()
     emit dataChanged(QModelIndex(), QModelIndex());
 }
 
-QVariant TableModel::data(const QModelIndex &index, int role) const // Переписать!
+QVariant TableModel::data(const QModelIndex &index, int role) const
 {
-    if(!index.isValid())
-        return QVariant();
-
-    if (index.row() >= m_cells.size() || index.row() < 0 ||
-            index.column() >= m_cells.first().size() || index.column() < 0)
-        return QVariant();
-
-    if(role == Qt::DisplayRole || role == Qt::EditRole)
+    if (index.row() >= 0 && index.row() < m_cells.size() &&
+            index.column() >= 0 && index.column() < m_cells.first().size() &&
+            (role == Qt::DisplayRole || role == Qt::EditRole)) // if ok
         return m_cells.at(index.row()).at(index.column());
+
+    else if (!index.isValid())
+        return QVariant();
+
     else
         return QVariant();
 }
