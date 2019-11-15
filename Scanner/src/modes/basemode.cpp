@@ -16,19 +16,9 @@ BaseMode::BaseMode(QWidget */*parent*/)
     m_mainWidget = new QWidget();
     m_mainWidget->setFixedSize(1024,768);
 
-    m_choiceFileLbl = new QLabel(tr("Выберите файл: "));
-    m_searchLbl = new QLabel(tr("Поиск: "));
-
-    m_choiceFilePB = new QPushButton(tr("Открыть"));
-    m_choiceFilePB->setObjectName("choiceFilePB");
-    m_crossImgPB = new QPushButton();
-    m_crossImgPB->setIcon(QIcon(":/img/cross.png"));
-    m_crossImgPB->setObjectName("crossImgPB");
-    m_crossImgPB->setToolTip(tr("Clear table"));
-
-    model = new TableModel();
-    table = new QTableView();
-    table->setModel(model);
+    m_statusBarLbl = new QLabel("StatusBar", this);
+    statusBar = new QStatusBar();
+    statusBar->addWidget(m_statusBarLbl);
 
 
     QMenuBar *menuBar = new QMenuBar(m_mainWidget);
@@ -43,22 +33,43 @@ BaseMode::BaseMode(QWidget */*parent*/)
     fileMenu->addAction(tr("&Выход"), this, SLOT(closeProgram()), Qt::CTRL + Qt::Key_Q);
 
 
-    m_inputEANLE = new QLineEdit;
-    m_inputEANLE->setValidator(new QRegExpValidator(QRegExp("[0-9]{13}")));
+
+
+    m_choiceFileLbl = new QLabel(tr("Выберите файл: "));
+
+    m_choiceFilePB = new QPushButton(tr("Открыть"));
+    m_choiceFilePB->setObjectName("choiceFilePB");
+
+    m_crossImgPB = new QPushButton();
+    m_crossImgPB->setIcon(QIcon(":/img/cross.png"));
+    m_crossImgPB->setObjectName("crossImgPB");
+    m_crossImgPB->setToolTip(tr("Clear table"));
 
     m_choiceFileLayout = new QHBoxLayout();
     m_choiceFileLayout->addWidget(m_choiceFileLbl);
     m_choiceFileLayout->addWidget(m_choiceFilePB);
     m_choiceFileLayout->addWidget(m_crossImgPB);
 
+
+    model = new TableModel();
+    table = new QTableView();
+    table->setModel(model);
+
+
+    m_searchLbl = new QLabel(tr("Поиск: "));
+    m_searchEANLE = new QLineEdit;
+    m_searchEANLE->setValidator(new QRegExpValidator(QRegExp("[0-9]{13}")));
+
     m_infoLayout = new QHBoxLayout();
     m_infoLayout->addWidget(m_searchLbl);
-    m_infoLayout->addWidget(m_inputEANLE);
+    m_infoLayout->addWidget(m_searchEANLE);
+
 
     m_mainLayout = new QVBoxLayout(m_mainWidget);
     m_mainLayout->addLayout(m_choiceFileLayout);
     m_mainLayout->addWidget(table);
     m_mainLayout->addLayout(m_infoLayout);
+    m_mainLayout->addWidget(statusBar);
 
     connect(m_choiceFilePB, SIGNAL(clicked()), SLOT(selectFile()));
     connect(m_choiceFilePB, SIGNAL(pressed()), SLOT(selectFile()));
@@ -66,7 +77,7 @@ BaseMode::BaseMode(QWidget */*parent*/)
     connect(m_crossImgPB, SIGNAL(clicked()), SLOT(clearTable()));
     connect(m_crossImgPB, SIGNAL(pressed()), SLOT(clearTable()));
 
-    connect(m_inputEANLE, SIGNAL(textEdited(const QString &)),
+    connect(m_searchEANLE, SIGNAL(textEdited(const QString &)),
             SLOT(inputEAN(const QString &)));
 
     m_mainWidget->show();
@@ -101,15 +112,22 @@ void BaseMode::selectFile()
 
 void BaseMode::inputEAN(const QString &EAN)
 {
-    if (EAN.size() == 13) // 13 is standart size of EAN-code
+    if (EAN.size() == 13) { // 13 is standart size of EAN-code
+        m_statusBarLbl->setText(tr(""));
         readFile(EAN);
-    else
+    }
+    else {
+        m_statusBarLbl->setText(tr("Bad input! "));
+#ifdef DEBUG
         qDebug() << __LINE__ << " " << __FILE__ << ":\n " << tr("Неправильный ввод! ") << endl;
+#endif
+    }
 }
 
 void BaseMode::clearTable()
 {
     m_choiceFileLbl->setText("");
+    m_searchEANLE->setText("");
     CSVFile.close();
     model->setData(model->index(model->rowCount() - 1, Scanner::SUM), QVariant(0), Qt::EditRole);
     model->removeRows(0,model->rowCount() - 2);
@@ -173,16 +191,6 @@ bool BaseMode::readFile(const QString &EAN)
     else
         qDebug() << __FILE__ << " "  << __LINE__ << ":\n " << "File: " << m_fileName << " isn't open!" << endl;
 
-    return false;
-}
-
-bool BaseMode::changeFile(QStringList &/*lineList*/)
-{
-    return false;
-}
-
-bool BaseMode::changeModel(QStringList &/*lineList*/)
-{
     return false;
 }
 
