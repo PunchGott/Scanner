@@ -30,7 +30,6 @@ SUBDIRS = modes \
           tablemodel
 
 SOURCES += \
-        error.cpp \
         main.cpp \
         modes/basemode.cpp \
         modes/receivingmode.cpp \
@@ -39,7 +38,6 @@ SOURCES += \
         tablemodel/tablemodel.cpp
 
 HEADERS += \
-        error.h \
         modes/basemode.h \
         modes/receivingmode.h \
         modes/shipmentmode.h \

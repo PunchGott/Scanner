@@ -1,11 +1,11 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
-#include "../error.h"
 #include "../namespace.h"
 #include "../tablemodel/tablemodel.h"
 
 #include <QWidget>
+#include <QMessageBox>
+#include <QCloseEvent>
 #include <QMenuBar>
 #include <QMenu>
 #include <QLabel>
@@ -28,13 +28,14 @@ class BaseMode : public QWidget
 
 public:
     explicit BaseMode(QWidget *parent = nullptr);
-    virtual ~BaseMode();
+    virtual ~BaseMode() override;
 
 protected slots:
     virtual bool makeVBA() = 0;
 
 protected:
     virtual bool computeRest() = 0;
+    virtual void closeEvent(QCloseEvent *event) override;
 
     TableModel *model;
     QTableView *table;
@@ -47,10 +48,12 @@ private slots:
     void selectFile();
     void inputEAN(const QString &EAN);
     void clearTable();
-    bool closeProgram();
+//    void closeProgram();
 
 
 private:
+    BaseMode(const BaseMode&);
+    BaseMode& operator=(const BaseMode&);
     bool readFile(const QString &EAN);
     bool convertPrise(QStringList &);
 
@@ -62,5 +65,3 @@ private:
     QHBoxLayout *m_choiceFileLayout, *m_infoLayout; // For other PushButtons
     QVBoxLayout *m_mainLayout;
 };
-
-#endif // MAINWINDOW_H

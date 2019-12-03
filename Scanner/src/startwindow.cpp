@@ -31,3 +31,8 @@ void StartWindow::click_on_shipmentPB()
     QPointer<ShipmentMode> shipmentmode = new ShipmentMode();
     m_startWgt->close();
 }
+
+void StartWindow::closeEvent(QCloseEvent *event)
+{
+    qDebug() << "StartWindow_Close";
+}

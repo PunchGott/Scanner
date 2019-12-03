@@ -13,6 +13,7 @@ public:
 
 private:
     virtual bool computeRest() override;
+    virtual void closeEvent(QCloseEvent *event) override;
 
     virtual bool makeVBA() override;
 };

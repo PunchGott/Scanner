@@ -2,8 +2,6 @@
 
 #define DEBUG
 
-// Сделать возможность создания нуменклатуры в Excel
-
 // Добавить обработку пользовательских ошибок и вывод их в QDialog
 // Добавить обработку логических и программных ошибок
 // Добавить QMenuBar
@@ -13,11 +11,11 @@
 
 BaseMode::BaseMode(QWidget */*parent*/)
 {
-    m_mainWidget = new QWidget();
+    m_mainWidget = new QWidget;
     m_mainWidget->setFixedSize(1024,768);
 
-    m_statusBarLbl = new QLabel("StatusBar", this);
-    statusBar = new QStatusBar();
+    m_statusBarLbl = new QLabel("StatusBar");
+    statusBar = new QStatusBar;
     statusBar->addWidget(m_statusBarLbl);
 
 
@@ -30,9 +28,7 @@ BaseMode::BaseMode(QWidget */*parent*/)
     fileMenu->addAction(tr("&Открыть"), this, SLOT(selectFile()),Qt::CTRL + Qt::Key_O);
     fileMenu->addAction(tr("&Сохранить"), this, SLOT(saveChanges()), Qt::CTRL + Qt::Key_S);
     fileMenu->addSeparator();
-    fileMenu->addAction(tr("&Выход"), this, SLOT(closeProgram()), Qt::CTRL + Qt::Key_Q);
-
-
+//    fileMenu->addAction(tr("&Выход"), this, SLOT(closeProgram()), Qt::CTRL + Qt::Key_Q); // closeEvent don't work because don't work closeEvent!
 
 
     m_choiceFileLbl = new QLabel(tr("Выберите файл: "));
@@ -40,19 +36,19 @@ BaseMode::BaseMode(QWidget */*parent*/)
     m_choiceFilePB = new QPushButton(tr("Открыть"));
     m_choiceFilePB->setObjectName("choiceFilePB");
 
-    m_crossImgPB = new QPushButton();
+    m_crossImgPB = new QPushButton;
     m_crossImgPB->setIcon(QIcon(":/img/cross.png"));
     m_crossImgPB->setObjectName("crossImgPB");
     m_crossImgPB->setToolTip(tr("Clear table"));
 
-    m_choiceFileLayout = new QHBoxLayout();
+    m_choiceFileLayout = new QHBoxLayout;
     m_choiceFileLayout->addWidget(m_choiceFileLbl);
     m_choiceFileLayout->addWidget(m_choiceFilePB);
     m_choiceFileLayout->addWidget(m_crossImgPB);
 
 
-    model = new TableModel();
-    table = new QTableView();
+    model = new TableModel;
+    table = new QTableView;
     table->setModel(model);
 
 
@@ -60,7 +56,7 @@ BaseMode::BaseMode(QWidget */*parent*/)
     m_searchEANLE = new QLineEdit;
     m_searchEANLE->setValidator(new QRegExpValidator(QRegExp("[0-9]{13}")));
 
-    m_infoLayout = new QHBoxLayout();
+    m_infoLayout = new QHBoxLayout;
     m_infoLayout->addWidget(m_searchLbl);
     m_infoLayout->addWidget(m_searchEANLE);
 
@@ -93,14 +89,14 @@ BaseMode::~BaseMode()
 void BaseMode::selectFile()
 {
     m_fileName = QFileDialog::getOpenFileName(m_mainWidget,
-        tr("Open Image"), QDir::currentPath(), tr("CSV file (*.csv)")); // Изменить позже currentPath() на rootPath()
+        tr("Open Image"), QDir::currentPath(), "CSV file (*.csv)"); // Изменить позже currentPath() на rootPath()
 
     CSVFile.setFileName(m_fileName);
     if (CSVFile.exists(m_fileName) && CSVFile.open(QIODevice::ReadOnly))
         m_fileContent = CSVFile.readAll(); // write all content in QByteArray
 
     if (!m_fileName.isEmpty()) {
-        int count = 0; // counter for size QString name
+        int count = 0; // counter for size of QString name
         for (int i = m_fileName.size(); m_fileName[i] != '/'; --i)
             ++count;
         QString name(count);
@@ -131,15 +127,33 @@ void BaseMode::clearTable()
     CSVFile.close();
     model->setData(model->index(model->rowCount() - 1, Scanner::SUM), QVariant(0), Qt::EditRole);
     model->removeRows(0,model->rowCount() - 2);
+    m_statusBarLbl->setText(tr("Таблица очищена. Файл закрыт"));
 }
 
-bool BaseMode::closeProgram()
+//void BaseMode::closeProgram()
+//{
+
+//}
+
+void BaseMode::closeEvent(QCloseEvent *event)
 {
-    if (m_mainWidget->close())
-        return true;
-    else {
+    qDebug() << "BaseMode::closeEvent ";
+    QMessageBox closeMsg;
+    closeMsg.setText("Вы точно хотите закрыть приложение?");
+    closeMsg.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+    closeMsg.setDefaultButton(QMessageBox::Yes);
+    int ret = closeMsg.exec();
+    switch (ret) {
+    case QMessageBox::No:
+#ifdef DEBUG
         qDebug() << tr("Невозможно закрыть приложение! ") << endl;
-        return false;
+#endif
+        event->ignore();
+        break;
+     case QMessageBox::Yes:
+        event->accept();
+        m_mainWidget->close();
+        break;
     }
 }
 

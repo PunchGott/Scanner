@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     else qDebug() << "File isn't open!" << endl;
     StartWindow w;
 
-
+//    ReceivingMode mode;
 
     return a.exec();
 }
