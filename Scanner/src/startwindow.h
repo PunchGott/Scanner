@@ -26,8 +26,6 @@ private slots:
     void click_on_shipmentPB();
 
 private:
-    void closeEvent(QCloseEvent *event) override;
-
     QPushButton *m_receivingPB, *m_shipmentPB;
 
     QVBoxLayout *m_startLayout;

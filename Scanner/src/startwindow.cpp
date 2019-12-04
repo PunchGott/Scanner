@@ -30,8 +30,3 @@ void StartWindow::click_on_shipmentPB()
     this->close();
     shipmentmode->show();
 }
-
-void StartWindow::closeEvent(QCloseEvent *event)
-{
-    qDebug() << "StartWindow_Close";
-}
