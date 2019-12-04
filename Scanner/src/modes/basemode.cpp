@@ -128,14 +128,9 @@ void BaseMode::clearTable()
     m_statusBarLbl->setText(tr("Таблица очищена. Файл закрыт"));
 }
 
-void BaseMode::closeProgram()
-{
-    this->close();
-}
 
 void BaseMode::closeEvent(QCloseEvent *event)
 {
-    qDebug() << "BaseMode::closeEvent ";
     QMessageBox closeMsg;
     closeMsg.setText("Вы точно хотите закрыть приложение?");
     closeMsg.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
@@ -150,9 +145,13 @@ void BaseMode::closeEvent(QCloseEvent *event)
         break;
      case QMessageBox::Yes:
         event->accept();
-//        this->close();
         break;
     }
+}
+
+void BaseMode::closeProgram()
+{
+    this->close();
 }
 
 // Just functions:
