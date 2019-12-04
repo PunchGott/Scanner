@@ -2,8 +2,10 @@
 #define NAMESPACE_H
 
 #include <QtGlobal>
+
 namespace Scanner {
 const quint8 g_headers_size = 8;
+const quint8 g_EAN_size = 13; // typical size for EAN (EAN13)
 
 enum Headers : quint8
 { // since 0 to 15

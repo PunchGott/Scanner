@@ -38,7 +38,7 @@ BaseMode::BaseMode(QWidget */*parent*/)
     m_crossImgPB = new QPushButton;
     m_crossImgPB->setIcon(QIcon(":/img/cross.png"));
     m_crossImgPB->setObjectName("crossImgPB");
-    m_crossImgPB->setToolTip(tr("Clear table"));
+    m_crossImgPB->setToolTip(tr("Очистить таблицу"));
 
     m_choiceFileLayout = new QHBoxLayout;
     m_choiceFileLayout->addWidget(m_choiceFileLbl);
@@ -87,7 +87,7 @@ BaseMode::~BaseMode()
 void BaseMode::selectFile()
 {
     m_fileName = QFileDialog::getOpenFileName(this,
-        tr("Open Image"), QDir::currentPath(), "CSV file (*.csv)"); // Изменить позже currentPath() на rootPath()
+        tr("Open Image"), QDir::rootPath(), "CSV file (*.csv)");
 
     CSVFile.setFileName(m_fileName);
     if (CSVFile.exists(m_fileName) && CSVFile.open(QIODevice::ReadOnly))
@@ -100,21 +100,18 @@ void BaseMode::selectFile()
         QString name(count);
         for (int i = m_fileName.size(); m_fileName[i] != '/'; --i, --count) // to only name of file view, not all directory
             name[count] = m_fileName[i];
-        m_choiceFileLbl->setText(QString("Файл: %1").arg(name));
+        m_choiceFileLbl->setText(QString(tr("Файл: %1")).arg(name));
     }
 }
 
 void BaseMode::inputEAN(const QString &EAN)
 {
-    if (EAN.size() == 13) { // 13 is standart size of EAN-code
-        m_statusBarLbl->setText(tr(""));
+    if (EAN.size() == Scanner::g_EAN_size) {
+        m_statusBarLbl->setText("");
         readFile(EAN);
     }
     else {
-        m_statusBarLbl->setText(tr("Bad input! "));
-#ifdef DEBUG
-        qDebug() << __LINE__ << " " << __FILE__ << ":\n " << tr("Неправильный ввод! ") << endl;
-#endif
+        m_statusBarLbl->setText(tr("Ввод не соотвествует формату EAN13!"));
     }
 }
 
