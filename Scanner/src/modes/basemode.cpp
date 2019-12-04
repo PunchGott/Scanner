@@ -129,15 +129,13 @@ void BaseMode::clearTable()
 void BaseMode::closeEvent(QCloseEvent *event)
 {
     QMessageBox closeMsg;
+    closeMsg.setIcon(QMessageBox::Question);
     closeMsg.setText("Вы точно хотите закрыть приложение?");
     closeMsg.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
     closeMsg.setDefaultButton(QMessageBox::Yes);
     int ret = closeMsg.exec();
     switch (ret) {
     case QMessageBox::No:
-#ifdef DEBUG
-        qDebug() << tr("Невозможно закрыть приложение! ") << endl;
-#endif
         event->ignore();
         break;
      case QMessageBox::Yes:
@@ -185,6 +183,10 @@ bool BaseMode::readFile(const QString &EAN)
                 }
                 else
                 {
+                    int ret = QMessageBox::warning(this, tr("Что-то с ценой"), tr("В файле не обнаружена цена,\n"
+                                                                            "либо она в неверном формате\n"
+                                                                            "Проверьте наличие цены, либо ее формат\n"
+                                                                            "Допустимый формат: 12.34"), QMessageBox::Ok);
                     qDebug() << "Нет цены! " << endl;
                     return false;
                 }
