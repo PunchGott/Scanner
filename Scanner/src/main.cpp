@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
         a.setStyleSheet(styleFile.readAll());
     else qDebug() << "File isn't open!" << endl;
     StartWindow w;
+    w.show();
 
 //    ReceivingMode mode;
 

@@ -48,7 +48,7 @@ private slots:
     void selectFile();
     void inputEAN(const QString &EAN);
     void clearTable();
-//    void closeProgram();
+    void closeProgram();
 
 
 private:
@@ -57,7 +57,6 @@ private:
     bool readFile(const QString &EAN);
     bool convertPrise(QStringList &);
 
-    QWidget *m_mainWidget;
     QLabel *m_choiceFileLbl, *m_searchLbl, *m_statusBarLbl;
     QPushButton *m_choiceFilePB, *m_crossImgPB;
     QLineEdit *m_searchEANLE;

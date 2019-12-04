@@ -27,7 +27,3 @@ bool ReceivingMode::makeVBA()
     return false;
 }
 
-void ReceivingMode::closeEvent(QCloseEvent *event)
-{
-    qDebug() << "ReceivingMode::closeEvent ";
-}

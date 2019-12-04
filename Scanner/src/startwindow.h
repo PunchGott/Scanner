@@ -28,7 +28,6 @@ private slots:
 private:
     void closeEvent(QCloseEvent *event) override;
 
-    QWidget *m_startWgt;
     QPushButton *m_receivingPB, *m_shipmentPB;
 
     QVBoxLayout *m_startLayout;

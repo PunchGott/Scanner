@@ -11,15 +11,14 @@
 
 BaseMode::BaseMode(QWidget */*parent*/)
 {
-    m_mainWidget = new QWidget;
-    m_mainWidget->setFixedSize(1024,768);
+    this->setFixedSize(1024,768);
 
     m_statusBarLbl = new QLabel("StatusBar");
     statusBar = new QStatusBar;
     statusBar->addWidget(m_statusBarLbl);
 
 
-    QMenuBar *menuBar = new QMenuBar(m_mainWidget);
+    QMenuBar *menuBar = new QMenuBar(this);
     QMenu *fileMenu = new QMenu(tr("&Файл"));
     QMenu *ViewMenu = new QMenu(tr("Вид"));
     menuBar->addMenu(fileMenu);
@@ -28,7 +27,7 @@ BaseMode::BaseMode(QWidget */*parent*/)
     fileMenu->addAction(tr("&Открыть"), this, SLOT(selectFile()),Qt::CTRL + Qt::Key_O);
     fileMenu->addAction(tr("&Сохранить"), this, SLOT(saveChanges()), Qt::CTRL + Qt::Key_S);
     fileMenu->addSeparator();
-//    fileMenu->addAction(tr("&Выход"), this, SLOT(closeProgram()), Qt::CTRL + Qt::Key_Q); // closeEvent don't work because don't work closeEvent!
+    fileMenu->addAction(tr("&Выход"), this, SLOT(closeProgram()), Qt::CTRL + Qt::Key_Q);
 
 
     m_choiceFileLbl = new QLabel(tr("Выберите файл: "));
@@ -61,7 +60,7 @@ BaseMode::BaseMode(QWidget */*parent*/)
     m_infoLayout->addWidget(m_searchEANLE);
 
 
-    m_mainLayout = new QVBoxLayout(m_mainWidget);
+    m_mainLayout = new QVBoxLayout(this);
     m_mainLayout->addLayout(m_choiceFileLayout);
     m_mainLayout->addWidget(table);
     m_mainLayout->addLayout(m_infoLayout);
@@ -76,7 +75,6 @@ BaseMode::BaseMode(QWidget */*parent*/)
     connect(m_searchEANLE, SIGNAL(textEdited(const QString &)),
             SLOT(inputEAN(const QString &)));
 
-    m_mainWidget->show();
 }
 
 BaseMode::~BaseMode()
@@ -88,7 +86,7 @@ BaseMode::~BaseMode()
 // Slots:
 void BaseMode::selectFile()
 {
-    m_fileName = QFileDialog::getOpenFileName(m_mainWidget,
+    m_fileName = QFileDialog::getOpenFileName(this,
         tr("Open Image"), QDir::currentPath(), "CSV file (*.csv)"); // Изменить позже currentPath() на rootPath()
 
     CSVFile.setFileName(m_fileName);
@@ -130,10 +128,10 @@ void BaseMode::clearTable()
     m_statusBarLbl->setText(tr("Таблица очищена. Файл закрыт"));
 }
 
-//void BaseMode::closeProgram()
-//{
-
-//}
+void BaseMode::closeProgram()
+{
+    this->close();
+}
 
 void BaseMode::closeEvent(QCloseEvent *event)
 {
@@ -152,7 +150,7 @@ void BaseMode::closeEvent(QCloseEvent *event)
         break;
      case QMessageBox::Yes:
         event->accept();
-        m_mainWidget->close();
+//        this->close();
         break;
     }
 }
