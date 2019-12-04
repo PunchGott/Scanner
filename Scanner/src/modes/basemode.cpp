@@ -1,12 +1,19 @@
 ﻿#include "basemode.h"
 
 #define DEBUG
+//#define SCANNER_MODE
 
 // Добавить обработку пользовательских ошибок и вывод их в QDialog
 // Добавить обработку логических и программных ошибок
 // Добавить QMenuBar
 // Добавть QStatusBar
 // Добавить подсказки
+
+
+// Чтобы при работе сканера программа не прерывала свою работу, если не был найден соответствующий
+// EAN-код или строка с этим EAN-кодом в таблице имела неправильный формат
+// или не содеражала необходимые свойства, необходимо вывести все ошибки в отдельный файл
+// или виджет, а не прерывать работу программы QMessageBox-ом
 
 
 BaseMode::BaseMode(QWidget */*parent*/)
@@ -109,6 +116,9 @@ void BaseMode::inputEAN(const QString &EAN)
     if (EAN.size() == Scanner::g_EAN_size) {
         m_statusBarLbl->setText("");
         readFile(EAN);
+#ifdef SCANNER_MODE
+        m_searchEANLE->setText("");
+#endif
     }
     else {
         m_statusBarLbl->setText(tr("Ввод не соотвествует формату EAN13!"));
@@ -161,10 +171,16 @@ bool BaseMode::convertPrise(QStringList &lineList)
             return true;
         }
         }
+    QMessageBox::warning(this, tr("Что-то с ценой"), tr("В файле не обнаружена цена,\n"
+                                                            "либо она в неверном формате\n"
+                                                            "Проверьте наличие цены, либо ее формат\n"
+                                                            "Допустимый формат: 12.34"), QMessageBox::Ok);
     return false;
 }
 
 bool BaseMode::readFile(const QString &EAN)
+// Изменить функцию так, что она считывает файл не каждый раз, а только тогда,
+// когда введенный EAN-код не равен предыдущему
 {
     if (CSVFile.isOpen()) {
         QTextStream readStream(&m_fileContent);
@@ -172,34 +188,28 @@ bool BaseMode::readFile(const QString &EAN)
         QStringList lineList;
         while (!readStream.atEnd()) {
             line = readStream.readLine();
-            if (line.contains(EAN))
-            {
+            if (line.contains(EAN)) {
                 lineList.append(line.split(";"));
 #ifdef DEBUG
                 qDebug() << __FILE__ << " "  << __LINE__ << ":\n " << line << endl;
 #endif
+
+                // Добавить здесь функцию isHeadRight(), проверяющую на корректность всю строку.
+                // Эта функция должна возвращать true если строка содержит всё, что необходимо.
+                // Сама проверка происходит в отдельных функциях на каждое необходимое свойство в таблице
+                // по типу того, как это делает функция convertPrise()
                 if (convertPrise(lineList)) {
                 model->addLine(lineList);
-                }
-                else
-                {
-                    int ret = QMessageBox::warning(this, tr("Что-то с ценой"), tr("В файле не обнаружена цена,\n"
-                                                                            "либо она в неверном формате\n"
-                                                                            "Проверьте наличие цены, либо ее формат\n"
-                                                                            "Допустимый формат: 12.34"), QMessageBox::Ok);
-                    qDebug() << "Нет цены! " << endl;
-                    return false;
-                }
                 model->computeTotal();
                 computeRest(); // the impelementation of this function is in inherits classes
                 return true;
+                }
             }
-            else if (readStream.atEnd())
-                qDebug() << __FILE__ << " "  << __LINE__ << ":\n " << "Ничего не найдено!" << endl;
-        } // while
+        }
+        QMessageBox::critical(this, tr("Товар не найден"), tr("Такого EAN-кода не было найдено!"), QMessageBox::Ok);
     } // if
     else
-        qDebug() << __FILE__ << " "  << __LINE__ << ":\n " << "File: " << m_fileName << " isn't open!" << endl;
+        QMessageBox::critical(this, tr("Файл не открыт"), tr("Не получается открыть файл!"), QMessageBox::Ok);
 
     return false;
 }

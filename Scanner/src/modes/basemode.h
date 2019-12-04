@@ -54,8 +54,15 @@ private slots:
 private:
     BaseMode(const BaseMode&);
     BaseMode& operator=(const BaseMode&);
+
     bool readFile(const QString &EAN);
+
+    bool isHeadRight(); // Содержит внутри себя все следюущие функции
+    bool containsCode(QStringList &);
+    bool containsArticle(QStringList &);
+    bool containsName(QStringList &);
     bool convertPrise(QStringList &);
+    bool containsRest(QStringList &);
 
     QLabel *m_choiceFileLbl, *m_searchLbl, *m_statusBarLbl;
     QPushButton *m_choiceFilePB, *m_crossImgPB;
