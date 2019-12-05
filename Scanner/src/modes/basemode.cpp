@@ -216,18 +216,18 @@ bool BaseMode::readFile(const QString &EAN)
 
 void BaseMode::saveChanges()
 {
-    QVector< QVector <QVariant> > tableContent;
-    for (int i = 0; i < model->rowCount(); ++i) // add all rows from model
-        tableContent.push_back(model->Row(i));
+    QVector< QVector <QVariant> > modelContent;
+    for (int i = 0; i < model->rowCount(); ++i) // add all rows from model in modelContent
+        modelContent.push_back(model->Row(i));
 
     QStringList lineList;
 
-    QString lineContent = QTextCodec::codecForName("Windows-1251")->toUnicode(m_fileContent);
-    QStringList lineListContent = lineContent.split(QRegExp(";|\\r\\n"));
+    QString lineContentFile = QTextCodec::codecForName("Windows-1251")->toUnicode(m_fileContent); // add all file contents in lineContentFile
+    QStringList lineListContentFile = lineContentFile.split(QRegExp(";|\\r\\n"));
 
-    for (int i = 0; i < tableContent.size() - 2; ++i) // - 2 because it's without "Итого" row and previous row of end of table
-        for (int j = 0; j < tableContent.first().size(); ++j)
-            lineList.push_back(tableContent.at(i).at(j).toString());
+    for (int i = 0; i < modelContent.size() - 2; ++i) // - 2 because it's without "Итого" row and previous row of end of table
+        for (int j = 0; j < modelContent.first().size(); ++j)
+            lineList.push_back(modelContent.at(i).at(j).toString());
 #ifdef DEBUG
     for (int i = 0; i < lineList.size(); ++i)
         qDebug() << __FILE__ << " "  << __LINE__ << " " << lineList.at(i) << " ";
@@ -235,27 +235,25 @@ void BaseMode::saveChanges()
 #endif
 
 #ifdef DEBUG
-    for (int i = 0; i < lineListContent.size(); ++i)
-        qDebug() << __FILE__ << " "  << __LINE__ << " " << lineListContent.at(i) << " ";
+    for (int i = 0; i < lineListContentFile.size(); ++i)
+        qDebug() << __FILE__ << " "  << __LINE__ << " " << lineListContentFile.at(i) << " ";
     qDebug() << endl << endl;
 #endif
 
-    // Чтобы найти нужную строку, в которой необходимо заменить остаток lineListContent[Scanner::REST] на
-    // остаток lineList[Scanner::REST], требуется найти начало строки в lineListContent по её коду и прибавить 4
+    // Чтобы найти нужную строку, в которой необходимо заменить остаток lineListContentFile[Scanner::REST] на
+    // остаток lineList[Scanner::REST], требуется найти начало строки в lineListContentFile по её коду и прибавить 4
     for (int i = Scanner::CODE; i < lineList.size(); i += Scanner::g_headers_size) {
         auto what = lineList.at(i);
-        auto index = lineListContent.indexOf(what);
-        lineListContent[index + 4] = lineList.at(i + Scanner::REST); // + 4 because Scanner::REST = 4
+        auto index = lineListContentFile.indexOf(what);
+        lineListContentFile[index + 4] = lineList.at(i + Scanner::REST); // + 4 because Scanner::REST = 4
     }
 
-
-
 #ifdef DEBUG
-     for (int i = 0; i < lineListContent.size(); ++i)
-         qDebug() << lineListContent.at(i) << " ";
+     for (int i = 0; i < lineListContentFile.size(); ++i)
+         qDebug() << __FILE__ << " " << __LINE__ << " " << lineListContentFile.at(i) << " ";
 #endif
 
-     QString lineOut = lineListContent.join(';');
+     QString lineOut = lineListContentFile.join(';');
      int count = 0; // count of columns in file
      for (int i = 0; i < lineOut.size(); ++i) {
          if (lineOut.at(i) == ';')
@@ -273,10 +271,7 @@ void BaseMode::saveChanges()
         test.close();
         }
     else
-
-#ifdef DEBUG
-        qDebug() << "File isn't open!";
-#endif
-
+        QMessageBox::critical(this,tr("Не получается сохранить изменения"), tr("При сохранении изменений произошла ошибка."
+                                                                               "Проверьте формат исходного файла"), QMessageBox::Ok);
 }
 
