@@ -1,14 +1,28 @@
 
 /*Стили в документации: гугли "Qt Style Sheets"*/
 
+QWidget
+{
+        background-color: white;
+}
+
+QMenuBar
+{
+	background-color: #6E37D4;
+	color: #19229B;
+	font-size: 16px;
+	font-style: italic;
+}
+
+QMenu
+{
+	background-color: #6E37D4;
+	color: #19229B;
+}
+
 QLabel
 {
 	font-size: 20px;
-}
-
-QHeaderView
-{
-/*        background-color: #FC0000;*/
 }
 
 QPushButton#start_PB
@@ -50,9 +64,9 @@ QPushButton#choiceFilePB:hover
 
 QPushButton#crossImgPB
 {
-	height:30px;
-	margin: 10px 10px 20px 20px;
-	border: 1px solid;
+    height:30px;
+    margin: 10px 10px 20px 20px;
+    border: 1px solid;
     border-radius: 6px;
     background-color: #FF0000;
 }
@@ -61,6 +75,11 @@ QPushButton#crossImgPB:hover
 {
     background-color: #EC3939;
 }
+
+/*QHeaderView
+{
+        background-color: #FC0000;
+}*/
 
 QLineEdit
 {
