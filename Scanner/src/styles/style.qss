@@ -1,12 +1,12 @@
 
 /*Стили в документации: гугли "Qt Style Sheets"*/
 
-QWidget
+/*QWidget
 {
         background-color: white;
-}
+}*/
 
-QMenuBar
+/*QMenuBar
 {
 	background-color: #6E37D4;
 	color: #19229B;
@@ -23,7 +23,7 @@ QMenu
 QLabel
 {
 	font-size: 20px;
-}
+}*/
 
 QPushButton#start_PB
 {
