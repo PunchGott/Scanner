@@ -18,7 +18,7 @@
 
 BaseMode::BaseMode(QWidget */*parent*/)
 {
-    this->setFixedSize(1024,768);
+    this->setFixedSize(1200, 800);
 
     m_statusBarLbl = new QLabel("StatusBar");
     statusBar = new QStatusBar;
@@ -26,16 +26,23 @@ BaseMode::BaseMode(QWidget */*parent*/)
 
 
     QMenuBar *menuBar = new QMenuBar(this);
+    menuBar->resize(this->width(),menuBar->height());
     QMenu *fileMenu = new QMenu(tr("&Файл"));
-    QMenu *ViewMenu = new QMenu(tr("Вид"));
+    QMenu *viewMenu = new QMenu(tr("&Вид"));
+    QMenu *helpMenu = new QMenu(tr("&Справка"));
     menuBar->addMenu(fileMenu);
-    menuBar->addMenu(ViewMenu);
+    menuBar->addMenu(viewMenu);
+    menuBar->addMenu(helpMenu);
+
+    qDebug() << menuBar->width() << " " << menuBar->height();
 
     fileMenu->addAction(tr("&Открыть"), this, SLOT(selectFile()),Qt::CTRL + Qt::Key_O);
     fileMenu->addAction(tr("&Сохранить"), this, SLOT(saveChanges()), Qt::CTRL + Qt::Key_S);
     fileMenu->addSeparator();
     fileMenu->addAction(tr("&Выход"), this, SLOT(closeProgram()), Qt::CTRL + Qt::Key_Q);
 
+    viewMenu->addAction(tr("&Выход"), this, SLOT(closeProgram()), Qt::CTRL + Qt::Key_Q);
+    helpMenu->addAction(tr("&Выход"), this, SLOT(closeProgram()), Qt::CTRL + Qt::Key_Q);
 
     m_choiceFileLbl = new QLabel(tr("Выберите файл: "));
 
@@ -48,6 +55,7 @@ BaseMode::BaseMode(QWidget */*parent*/)
     m_crossImgPB->setToolTip(tr("Очистить таблицу"));
 
     m_choiceFileLayout = new QHBoxLayout;
+    m_choiceFileLayout->setContentsMargins(0,20,0,0);
     m_choiceFileLayout->addWidget(m_choiceFileLbl);
     m_choiceFileLayout->addWidget(m_choiceFilePB);
     m_choiceFileLayout->addWidget(m_crossImgPB);
@@ -68,6 +76,7 @@ BaseMode::BaseMode(QWidget */*parent*/)
 
 
     m_mainLayout = new QVBoxLayout(this);
+    m_mainLayout->setMargin(20);
     m_mainLayout->addLayout(m_choiceFileLayout);
     m_mainLayout->addWidget(table);
     m_mainLayout->addLayout(m_infoLayout);
@@ -222,8 +231,8 @@ void BaseMode::saveChanges()
 
     QStringList lineList;
 
-    QString lineContentFile = QTextCodec::codecForName("Windows-1251")->toUnicode(m_fileContent); // add all file contents in lineContentFile
-    QStringList lineListContentFile = lineContentFile.split(QRegExp(";|\\r\\n"));
+    QString lineFileContent = QTextCodec::codecForName("Windows-1251")->toUnicode(m_fileContent); // add all file contents in lineFileContent
+    QStringList lineListContentFile = lineFileContent.split(QRegExp(";|\\r\\n"));
 
     for (int i = 0; i < modelContent.size() - 2; ++i) // - 2 because it's without "Итого" row and previous row of end of table
         for (int j = 0; j < modelContent.first().size(); ++j)
