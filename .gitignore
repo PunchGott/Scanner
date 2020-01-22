@@ -6,6 +6,7 @@
 
 #Folders
 Scanner/Scanner-x64-Debug/
+build-Scanner-Desktop-Debug/
 
 # Compiled Object files
 *.slo
